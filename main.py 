@@ -1,0 +1,29 @@
+import requests     
+from flask import Flask, request
+url = "https://api.spacexdata.com/v4/capsules"
+r = requests.get(url)
+# print(r.text)
+
+app = Flask("space")
+app.config["DEBUG"] = True
+data = []
+
+for capsule in r.json(): 
+    data.append(capsule)
+#print(data)
+
+@app.route("/home", methods= ["GET", "POST"])
+def home(): 
+    if request.method == "GET": 
+        return  r.json() 
+
+@app.route("/launch", methods = ["GET", "POST"])
+def launches(): 
+    for i, launch in enumerate(data): 
+        print(launch["launches"])
+        launch["totalLaunches"] = len(launch["launches"])
+    print(data)
+    return data
+
+
+app.run(host="0.0.0.0", port = 5050)
